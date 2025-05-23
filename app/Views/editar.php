@@ -136,20 +136,54 @@
 <h2>Editar Perfil</h2>
 
 <form method="post" action="<?= site_url('usuario/editarguardar') ?>">
-    <div class="mb-3">
-        <label for="nombre" class="form-label">Nombre</label>
-        <input type="text" name="nombre" id="nombre" class="form-control" value="<?= esc($usuario['nombre']) ?>" required>
-    </div>
-    <div class="mb-3">
-        <label for="correo" class="form-label">Correo</label>
-        <input type="email" name="correo" id="correo" class="form-control" value="<?= esc($usuario['correo']) ?>" required>
-    </div>
-    <div class="mb-3">
-        <label for="contrasenia" class="form-label">Contraseña</label>
-        <input type="password" name="contrasenia" id="contrasenia" class="form-control" placeholder="Nueva contraseña" required>
-    </div>
-    <button type="submit" class="btn btn-primary">Guardar cambios</button>
+  <div class="mb-3">
+    <label for="nombre" class="form-label">Nombre</label>
+    <input
+      type="text"
+      name="nombre"
+      id="nombre"
+      class="form-control"
+      value="<?= esc($usuario['nombre']) ?>"
+      required
+      minlength="3"
+      maxlength="50"
+      pattern="[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+"
+      title="El nombre solo puede contener letras y espacios"
+    >
+  </div>
+
+  <div class="mb-3">
+    <label for="correo" class="form-label">Correo</label>
+    <input
+      type="email"
+      name="correo"
+      id="correo"
+      class="form-control"
+      value="<?= esc($usuario['correo']) ?>"
+      required
+      maxlength="100"
+    >
+  </div>
+
+  <div class="mb-3">
+    <label for="contrasenia" class="form-label">Contraseña</label>
+    <input
+      type="password"
+      name="contrasenia"
+      id="contrasenia"
+      class="form-control"
+      placeholder="Nueva contraseña"
+      required
+      minlength="8"
+      maxlength="64"
+      pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+"
+      title="Debe contener al menos una mayúscula, una minúscula y un número"
+    >
+  </div>
+
+  <button type="submit" class="btn btn-primary">Guardar cambios</button>
 </form>
+
 
 </body>
 </html>

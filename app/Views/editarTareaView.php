@@ -134,32 +134,67 @@
 <h1>Editar Tarea</h1>
 
 <form action="<?= base_url('tarea/actualizar') ?>" method="post">
-    <input type="hidden" name="id" value="<?= esc($tarea['id']) ?>">
+  <input type="hidden" name="id" value="<?= esc($tarea['id']) ?>">
 
-    <label for="titulo">Título:</label>
-    <input type="text" name="titulo" id="titulo" value="<?= esc($tarea['titulo']) ?>" required>
+  <label for="titulo">Título:</label>
+  <input
+    type="text"
+    name="titulo"
+    id="titulo"
+    value="<?= esc($tarea['titulo']) ?>"
+    required
+    minlength="3"
+    maxlength="100"
+    title="Debe tener entre 3 y 100 caracteres"
+  >
 
-    <label for="descripcion">Descripción:</label>
-    <textarea name="descripcion" id="descripcion"><?= esc($tarea['descripcion']) ?></textarea>
+  <label for="descripcion">Descripción:</label>
+  <textarea
+    name="descripcion"
+    id="descripcion"
+    maxlength="500"
+    title="Máximo 500 caracteres"
+  ><?= esc($tarea['descripcion']) ?></textarea>
 
-    <label for="prioridad">Prioridad:</label>
-    <select name="prioridad" id="prioridad">
-        <option value="baja" <?= $tarea['prioridad'] == 'baja' ? 'selected' : '' ?>>Baja</option>
-        <option value="normal" <?= $tarea['prioridad'] == 'normal' ? 'selected' : '' ?>>Normal</option>
-        <option value="alta" <?= $tarea['prioridad'] == 'alta' ? 'selected' : '' ?>>Alta</option>
-    </select>
+  <label for="prioridad">Prioridad:</label>
+  <select name="prioridad" id="prioridad" required>
+    <option value="baja" <?= $tarea['prioridad'] == 'baja' ? 'selected' : '' ?>>Baja</option>
+    <option value="normal" <?= $tarea['prioridad'] == 'normal' ? 'selected' : '' ?>>Normal</option>
+    <option value="alta" <?= $tarea['prioridad'] == 'alta' ? 'selected' : '' ?>>Alta</option>
+  </select>
 
-    <label for="fecha_vencimiento">Fecha de vencimiento:</label>
-    <input type="date" name="fecha_vencimiento" id="fecha_vencimiento" value="<?= esc($tarea['fecha_vencimiento']) ?>">
+  <label for="fecha_vencimiento">Fecha de vencimiento:</label>
+  <input
+    type="date"
+    name="fecha_vencimiento"
+    id="fecha_vencimiento"
+    value="<?= esc($tarea['fecha_vencimiento']) ?>"
+    min="<?= date('Y-m-d') ?>"
+    title="Debe ser una fecha futura"
+  >
 
-    <label for="fecha_recordatorio">Fecha de recordatorio:</label>
-    <input type="date" name="fecha_recordatorio" id="fecha_recordatorio" value="<?= esc($tarea['fecha_recordatorio']) ?>">
+  <label for="fecha_recordatorio">Fecha de recordatorio:</label>
+  <input
+    type="date"
+    name="fecha_recordatorio"
+    id="fecha_recordatorio"
+    value="<?= esc($tarea['fecha_recordatorio']) ?>"
+    title="Debe ser anterior o igual a la fecha de vencimiento"
+  >
 
-    <label for="color">Color:</label>
-    <input type="text" name="color" id="color" value="<?= esc($tarea['color']) ?>">
+  <label for="color">Color (formato #RRGGBB):</label>
+  <input
+    type="text"
+    name="color"
+    id="color"
+    value="<?= esc($tarea['color']) ?>"
+    pattern="^#([A-Fa-f0-9]{6})?$"
+    title="Debe estar en formato hexadecimal, por ejemplo #FF0000"
+  >
 
-    <button type="submit">Actualizar</button>
+  <button type="submit">Actualizar</button>
 </form>
+
 
 </body>
 </html>

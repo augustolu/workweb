@@ -27,9 +27,9 @@ class Database extends Config
     public array $default = [
         'DSN'          => '',
         'hostname'     => 'localhost',
-        'username'     => 'userPickTask',
-        'password'     => 'task02ejemplo',
-        'database'     => 'picktask',
+        'username'     => 'workwebpro',
+        'password'     => 'workwebpro123',
+        'database'     => 'workweb',
         'DBDriver'     => 'MySQLi',
         'DBPrefix'     => '',
         'pConnect'     => false,

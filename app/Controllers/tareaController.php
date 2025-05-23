@@ -10,6 +10,24 @@ use App\Controllers\ColaboracionController;
 
 class subTareaController extends BaseController
 {
+
+    public function historial()
+    {
+        $modeloTarea = new Tarea();
+        $usuarioId = session('id_usuario') ?? 1;
+        $data['tareasArchivadas'] = $modeloTarea->obtenerTareasArchivadas($usuarioId);
+        $data['tareasActivas'] = $modeloTarea->obtenerTareasNoArchivadas($usuarioId);
+        return view('historialView', $data);
+    }
+
+    public function verColaboraciones()
+    {
+        $usuario_id = session()->get('id_usuario'); 
+        $tareaModel = new Tarea(); 
+        $data['tareas_colaborativas'] = $tareaModel->obtenerTareasColaborativas($usuario_id); 
+        return view('inicioView', $data); 
+    }
+
     public function quitarResponsable()
     {
         $subtarea_id = $this->request->getPost('subtarea_id');

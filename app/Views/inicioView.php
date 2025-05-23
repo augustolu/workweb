@@ -251,38 +251,6 @@
 <script>
     const normalize = str => str?.toLowerCase().replace(/\s+/g, '_');
 
-    window.addEventListener("DOMContentLoaded", () => {
-        const filtros = {
-            prioridad: document.getElementById('filtro-prioridad'),
-            estado: document.getElementById('filtro-estado'),
-        };
-
-        // Usar 'change' para selects
-        Object.values(filtros).forEach(el => {
-            if (el) {
-                el.addEventListener('change', filtrarTareas);
-            }
-        });
-
-        function filtrarTareas() {
-            const cards = document.querySelectorAll('.tarea-card');
-            const prio = filtros.prioridad.value.toLowerCase();
-            const estado = filtros.estado.value.toLowerCase();
-
-            cards.forEach(card => {
-                const cardPrio = normalize(card.dataset.prioridad);
-                const cardEstado = normalize(card.dataset.estado);
-
-                const matchPrio = !prio || cardPrio === prio;
-                const matchEstado = !estado || cardEstado === estado;
-
-                card.style.display = (matchPrio && matchEstado) ? 'block' : 'none';
-            });
-        }
-
-        // Opcional: filtrar al cargar la página por si hay valores preseleccionados
-        filtrarTareas();
-    });
 </script>
 
 

@@ -128,31 +128,31 @@
         <div class="panel">
             <h1>Crear Nueva Tarea</h1>
             <form action="<?= base_url('tareas/guardar') ?>" method="post">
-                <label for="titulo">Título:</label>
-                <input type="text" id="titulo" name="titulo" required>
+            <label for="titulo">Título:</label>
+            <input type="text" id="titulo" name="titulo" required minlength="3" maxlength="100" placeholder="Ej: Comprar víveres">
 
-                <label for="descripcion">Descripción:</label>
-                <textarea id="descripcion" name="descripcion"></textarea>
+            <label for="descripcion">Descripción:</label>
+            <textarea id="descripcion" name="descripcion" minlength="0" maxlength="500" placeholder="Opcional (máx 500 caracteres)"></textarea>
 
-                <label for="prioridad">Prioridad:</label>
-                <select id="prioridad" name="prioridad">
-                    <option value="baja">Baja</option>
-                    <option value="normal" selected>Normal</option>
-                    <option value="alta">Alta</option>
-                </select>
+            <label for="prioridad">Prioridad:</label>
+            <select id="prioridad" name="prioridad" required>
+                <option value="baja">Baja</option>
+                <option value="normal" selected>Normal</option>
+                <option value="alta">Alta</option>
+            </select>
 
-                <label for="fecha_vencimiento">Fecha de vencimiento:</label>
-                <input type="date" id="fecha_vencimiento" name="fecha_vencimiento">
+            <label for="fecha_vencimiento">Fecha de vencimiento:</label>
+            <input type="date" id="fecha_vencimiento" name="fecha_vencimiento" min="<?= date('Y-m-d') ?>">
 
-                <label for="fecha_recordatorio">Fecha de recordatorio:</label>
-                <input type="date" id="fecha_recordatorio" name="fecha_recordatorio">
+            <label for="fecha_recordatorio">Fecha de recordatorio:</label>
+            <input type="date" id="fecha_recordatorio" name="fecha_recordatorio" min="<?= date('Y-m-d') ?>">
 
-                <label for="color">Color (opcional):</label>
-                <input type="text" id="color" name="color">
+            <label for="color">Color (opcional):</label>
+            <input type="color" id="color" name="color">
 
-                <input type="hidden" name="tarea_id" value="1"><!-- Ajustar según sea necesario -->
+            <input type="hidden" name="tarea_id" value="1">
 
-                <button type="submit">Guardar</button>
+            <button type="submit">Guardar</button>
             </form>
         </div>
     </div>

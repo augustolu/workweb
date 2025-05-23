@@ -145,9 +145,16 @@
     <!-- Login -->
     <div class="login-box">
       <h2>Iniciar Sesión</h2>
+
+      <?php if (session()->getFlashdata('error')): ?>
+        <div class="alert" style="color: white; background-color: #e74c3c; padding: 10px; border-radius: 5px; margin-bottom: 10px;">
+          <?= session()->getFlashdata('error') ?>
+        </div>
+      <?php endif; ?>
+
       <form action="<?= base_url('usuario/autenticar') ?>" method="post">
         <label for="correo">Correo electrónico:</label>
-        <input type="email" id="correo" name="correo" required>
+        <input type="email" id="correo" name="correo" value="<?= old('correo') ?>" required>
 
         <label for="clave">Contraseña:</label>
         <input type="password" id="clave" name="clave" required>
@@ -163,7 +170,7 @@
     </div>
 
     <!-- Registro -->
-    <div class="register-box">
+    <div class="register-box" style="display: none;">
       <h2>Registrarse</h2>
       <form action="<?= base_url('usuario/guardarRegistro') ?>" method="post">
         <label for="nombre">Nombre completo:</label>
@@ -198,4 +205,5 @@
     }
   </script>
 </body>
+
 </html>
