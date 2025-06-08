@@ -2,14 +2,125 @@
 
 namespace App\Controllers;
 
-use App\Models\Subtarea;
-use App\Models\Colaboracion;
 use App\Models\Tarea;
-use App\Controllers\tareaController;
-use App\Controllers\ColaboracionController;
+use App\Models\Subtarea;
+use App\Models\MiembroSubtarea;
+use App\Models\Colaboracion;
 
-class subTareaController extends BaseController
-{
+
+class tareaController extends BaseController{
+    
+    
+    public function mostrarDetalles(){
+        $modeloTarea = new Tarea();
+        $modeloSubTarea = new Subtarea();
+        $modeloMiembroSubtarea = new MiembroSubtarea();
+        $modeloColaboracion = new Colaboracion();
+        if (isset($this->request) && $this->request->getPost('tarea_id') !== null) {
+    $idTarea = $this->request->getPost('tarea_id');
+    } else {
+        $idTarea = session()->getFlashdata('tarea_id');
+    }
+        $subTareas = $modeloSubTarea->obtenerSubTareas($idTarea);
+        $data['tarea'] = $modeloTarea->obtenerTarea($idTarea);
+        $data['subTareas'] = $subTareas;
+        $data['subtareas'] = [];
+        foreach ($subTareas as $subtarea) {
+            $responsables = $modeloMiembroSubtarea
+        ->select('usuario.*')
+        ->join('usuario', 'usuario.id = miembro_subtarea.usuario_id')
+        ->where('miembro_subtarea.subtarea_id', $subtarea['id']) 
+        ->findAll();
+    $subtarea['responsables'] = $responsables;
+    $data['subtareas'][] = $subtarea;
+}
+$colaboradores = $modeloColaboracion
+            ->select('usuario.*')
+            ->join('usuario', 'usuario.id = colaboracion.usuario_id')
+            ->where('colaboracion.tarea_id', $idTarea)
+            ->findAll();
+        $asignados = $modeloMiembroSubtarea
+            ->select('usuario_id')
+            ->join('subtarea', 'subtarea.id = miembro_subtarea.subtarea_id')
+            ->where('subtarea.tarea_id', $idTarea)
+            ->findColumn('usuario_id');
+        $colaboradoresDisponibles = array_filter($colaboradores, function ($usuario) use ($asignados) {
+            return !in_array($usuario['id'], $asignados ?? []);
+        });
+        $data['colaboradores_disponibles'] = $colaboradoresDisponibles;
+        return view('tareaView', $data);
+    }
+
+    public function crear()
+    {
+        return view('crearTareaView');
+    }
+
+    public function guardar()
+    {
+        $modeloTarea = new Tarea();
+        $data = [
+            'usuario_id' => session('id_usuario') ?? 1, // Mejor usar sesión si está disponible
+            'titulo' => $this->request->getPost('titulo'),
+            'descripcion' => $this->request->getPost('descripcion'),
+            'estado' => 'definida',
+            'prioridad' => $this->request->getPost('prioridad'),
+            'fecha_vencimiento' => $this->request->getPost('fecha_vencimiento'),
+            'fecha_recordatorio' => $this->request->getPost('fecha_recordatorio'),
+            'color' => $this->request->getPost('color'),
+            'archivada' => 0
+        ];
+        if ($modeloTarea->insert($data)) {
+            return redirect()->to('/')->with('mensaje', 'Tarea creada con éxito');
+        } else {
+            dd($modeloTarea->errors());
+        }
+    }
+    
+
+    public function editar()
+    {
+        $id = $this->request->getPost('id_tarea');
+        $modeloTarea = new Tarea();
+        $data['tarea'] = $modeloTarea->find($id);
+        return view('editarTareaView', $data);
+    }
+
+    public function actualizar()
+    {
+        $modeloTarea = new Tarea();
+        $id = $this->request->getPost('id');
+        $data = [
+            'titulo' => $this->request->getPost('titulo'),
+            'descripcion' => $this->request->getPost('descripcion'),
+            'estado' => 'definida',
+            'prioridad' => $this->request->getPost('prioridad'),
+            'fecha_vencimiento' => $this->request->getPost('fecha_vencimiento'),
+            'fecha_recordatorio' => $this->request->getPost('fecha_recordatorio'),
+            'color' => $this->request->getPost('color')
+        ];
+        $modeloTarea->update($id, $data);
+        return redirect()->to('/')->with('mensaje', 'Tarea actualizada con éxito');
+    }
+
+    // En vez de borrar, se archiva
+    public function baja()
+    {
+        $id = $this->request->getPost('id_tarea');
+        if ($id) {
+            $tareaModel = new Tarea();
+            $tareaModel->update($id, ['archivada' => 1]); // Baja lógica
+            return redirect()->to('/')->with('mensaje', 'Tarea archivada correctamente');
+        }
+        return redirect()->to('/')->with('error', 'No se pudo archivar la tarea');
+    }
+
+    public function archivar($id)
+    {
+        $modeloTarea = new Tarea();
+        $modeloTarea->update($id, ['archivada' => 1]);
+        return redirect()->to('/')->with('mensaje', 'Tarea archivada correctamente.');
+    }
 
     public function historial()
     {
@@ -28,149 +139,4 @@ class subTareaController extends BaseController
         return view('inicioView', $data); 
     }
 
-    public function quitarResponsable()
-    {
-        $subtarea_id = $this->request->getPost('subtarea_id');
-        $usuario_id = $this->request->getPost('usuario_id');
-        $tarea_id = $this->request->getPost('tarea_id');
-
-        $model = new Subtarea();
-        $model->quitarResponsable($subtarea_id, $usuario_id);
-
-        $tareaCtrl = new tareaController();
-        session()->setFlashdata('tarea_id', $tarea_id);
-        return $tareaCtrl->mostrarDetalles();
-    }
-
-    public function agregarResponsable()
-    {
-        $subtarea_id = $this->request->getPost('subtarea_id');
-        $usuario_id = $this->request->getPost('usuario_id');
-        $tarea_id = $this->request->getPost('tarea_id');
-
-        $model = new Subtarea();
-        $model->asignarResponsable($subtarea_id, $usuario_id);
-
-        $tareaCtrl = new tareaController();
-        session()->setFlashdata('tarea_id', $tarea_id);
-        return $tareaCtrl->mostrarDetalles();
-    }
-
-    public function guardarAsignacion()
-    {
-        $subtarea_id = $this->request->getPost('subtarea_id');
-        $usuario_id = $this->request->getPost('usuario_id');
-        $correo = $this->request->getPost('correo');
-
-        $model = new Subtarea();
-        $model->asignarResponsable($subtarea_id, $usuario_id, $correo);
-
-        return redirect()->to('/tareas/detalles/' . $subtarea_id)->with('mensaje', 'Responsable asignado');
-    }
-
-    public function guardar()
-    {
-        $modeloSubtarea = new Subtarea();
-        $modeloMiembroSubtarea = new Colaboracion();
-
-        $data = [
-            'tarea_id' => $this->request->getPost('tarea_id'),
-            'titulo' => $this->request->getPost('titulo'),
-            'descripcion' => $this->request->getPost('descripcion'),
-            'estado' => $this->request->getPost('estado')
-        ];
-
-        if ($modeloSubtarea->insert($data)) {
-            $subtarea_id = $modeloSubtarea->insertID();
-            $responsable_id = $this->request->getPost('responsable');
-
-            if (!empty($responsable_id)) {
-                $modeloMiembroSubtarea->insert([
-                    'subtarea_id' => $subtarea_id,
-                    'usuario_id' => $responsable_id
-                ]);
-            }
-
-            session()->setFlashdata('tarea_id', $data['tarea_id']);
-            return redirect()->to('/tarea/detalles')->with('mensaje', 'Subtarea creada con éxito');
-        } else {
-            return redirect()->back()->withInput()->with('error', 'Error al crear la subtarea');
-        }
-    }
-
-    public function crear()
-    {
-        $titulo = $this->request->getPost('titulo');
-        $descripcion = $this->request->getPost('descripcion');
-        $estado = $this->request->getPost('estado');
-        $tarea_id = $this->request->getPost('tarea_id');
-        $prioridad = $this->request->getPost('prioridad');
-        $color = $this->request->getPost('color');
-
-        $model = new Subtarea();
-        $insert = $model->insert([
-            'titulo' => $titulo,
-            'descripcion' => $descripcion,
-            'estado' => $estado,
-            'tarea_id' => $tarea_id,
-            'prioridad' => $prioridad,
-            'color' => $color
-        ]);
-
-        if ($insert) {
-            return redirect()->back()->with('success', 'Subtarea creada correctamente');
-        } else {
-            return redirect()->back()->with('error', 'No se pudo guardar la subtarea.');
-        }
-    }
-
-    public function eliminar($id)
-    {
-        $modelo = new Subtarea();
-        $tarea_id = $this->request->getPost('tarea_id');
-
-        if ($modelo->delete($id)) {
-            $tareaCtrl = new tareaController();
-            session()->setFlashdata('tarea_id', $tarea_id);
-            return $tareaCtrl->mostrarDetalles();
-        } else {
-            return redirect()->back()->with('error', 'No se pudo eliminar la subtarea.');
-        }
-    }
-
-    public function editar($id)
-    {
-        $modelo = new Subtarea();
-        $datos = [
-            'titulo' => $this->request->getPost('titulo'),
-            'descripcion' => $this->request->getPost('descripcion'),
-            'estado' => $this->request->getPost('estado'),
-            'prioridad' => $this->request->getPost('prioridad'),
-            'fecha_vencimiento' => $this->request->getPost('fecha_vencimiento'),
-            'fecha_recordatorio' => $this->request->getPost('fecha_recordatorio'),
-            'color' => $this->request->getPost('color'),
-        ];
-
-        if ($modelo->update($id, $datos)) {
-            return redirect()->back()->with('mensaje', 'Subtarea actualizada correctamente.');
-        } else {
-            return redirect()->back()->with('error', 'Error al actualizar la subtarea.');
-        }
-    }
-
-    public function cambiarEstado()
-    {
-        $id = $this->request->getPost('subtarea_id');
-        $estado = $this->request->getPost('estado');
-        $tarea_id = $this->request->getPost('tarea_id');
-
-        $modelo = new Subtarea();
-        $modeloTarea = new Tarea();
-        $modelo->cambiarEstado($id, $estado);
-        $modeloTarea->actualizarEstadoPorSubtareas($tarea_id);
-
-        $tareaCtrl = new ColaboracionController();
-        session()->setFlashdata('tarea_id', $tarea_id);
-        return $tareaCtrl->tareaColaborar();
-    }
 }

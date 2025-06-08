@@ -147,17 +147,17 @@
       <h2>Iniciar Sesión</h2>
 
       <?php if (session()->getFlashdata('error')): ?>
-        <div class="alert" style="color: white; background-color: #e74c3c; padding: 10px; border-radius: 5px; margin-bottom: 10px;">
+        <div class="alert">
           <?= session()->getFlashdata('error') ?>
         </div>
       <?php endif; ?>
 
       <form action="<?= base_url('usuario/autenticar') ?>" method="post">
         <label for="correo">Correo electrónico:</label>
-        <input type="email" id="correo" name="correo" value="<?= old('correo') ?>" required>
+        <input type="email" id="correo" name="correo" value="<?= old('correo') ?>" required pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" title="Ingrese un correo válido">
 
         <label for="clave">Contraseña:</label>
-        <input type="password" id="clave" name="clave" required>
+        <input type="password" id="clave" name="clave" required minlength="8" title="Mínimo 8 caracteres">
 
         <div class="button-container">
           <button type="submit">Ingresar</button>
@@ -172,15 +172,22 @@
     <!-- Registro -->
     <div class="register-box" style="display: none;">
       <h2>Registrarse</h2>
+      
+      <?php if (session()->getFlashdata('registro_error')): ?>
+        <div class="alert">
+          <?= session()->getFlashdata('registro_error') ?>
+        </div>
+      <?php endif; ?>
+
       <form action="<?= base_url('usuario/guardarRegistro') ?>" method="post">
         <label for="nombre">Nombre completo:</label>
-        <input type="text" id="nombre" name="nombre" required>
+        <input type="text" id="nombre" name="nombre" required pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]{3,50}" title="Solo letras y espacios (3-50 caracteres)">
 
         <label for="correo">Correo electrónico:</label>
-        <input type="email" id="correo" name="correo" required>
+        <input type="email" id="correo_registro" name="correo" required pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" title="Ingrese un correo válido">
 
         <label for="clave">Contraseña:</label>
-        <input type="password" id="clave" name="clave" required>
+        <input type="password" id="clave_registro" name="clave" required minlength="8" pattern="^(?=.*[A-Z])(?=.*\d).{8,}$" title="Mínimo 8 caracteres, 1 mayúscula y 1 número">
 
         <div class="button-container">
           <button type="submit">Registrarse</button>

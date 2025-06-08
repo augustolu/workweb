@@ -127,33 +127,54 @@
     <div class="content">
         <div class="panel">
             <h1>Crear Nueva Tarea</h1>
-            <form action="<?= base_url('tareas/guardar') ?>" method="post">
-            <label for="titulo">Título:</label>
-            <input type="text" id="titulo" name="titulo" required minlength="3" maxlength="100" placeholder="Ej: Comprar víveres">
+            <form action="<?= base_url('tareas/guardar') ?>" method="post" onsubmit="return validarFormulario()">
+    <label for="titulo">Título:</label>
+    <input type="text" id="titulo" name="titulo" required minlength="3" maxlength="100" pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ0-9\s.,;:¡!¿?-]+" title="Solo letras, números o signos básicos (3-100 caracteres)." placeholder="Ej: Comprar víveres">
+    <small id="error-titulo" class="error"></small>
 
-            <label for="descripcion">Descripción:</label>
-            <textarea id="descripcion" name="descripcion" minlength="0" maxlength="500" placeholder="Opcional (máx 500 caracteres)"></textarea>
+    <label for="descripcion">Descripción:</label>
+    <textarea id="descripcion" name="descripcion" maxlength="500" placeholder="Opcional (máx 500 caracteres)"></textarea>
+    <small id="error-descripcion" class="error"></small>
 
-            <label for="prioridad">Prioridad:</label>
-            <select id="prioridad" name="prioridad" required>
-                <option value="baja">Baja</option>
-                <option value="normal" selected>Normal</option>
-                <option value="alta">Alta</option>
-            </select>
+    <label for="prioridad">Prioridad:</label>
+    <select id="prioridad" name="prioridad" required>
+        <option value="baja">Baja</option>
+        <option value="normal" selected>Normal</option>
+        <option value="alta">Alta</option>
+    </select>
 
-            <label for="fecha_vencimiento">Fecha de vencimiento:</label>
-            <input type="date" id="fecha_vencimiento" name="fecha_vencimiento" min="<?= date('Y-m-d') ?>">
+    <label for="fecha_vencimiento">Fecha de vencimiento:</label>
+    <input type="date" id="fecha_vencimiento" name="fecha_vencimiento" required min="<?= date('Y-m-d') ?>">
+    <small id="error-fecha-vencimiento" class="error"></small>
 
-            <label for="fecha_recordatorio">Fecha de recordatorio:</label>
-            <input type="date" id="fecha_recordatorio" name="fecha_recordatorio" min="<?= date('Y-m-d') ?>">
+    <label for="fecha_recordatorio">Fecha de recordatorio (opcional):</label>
+    <input type="date" id="fecha_recordatorio" name="fecha_recordatorio" min="<?= date('Y-m-d') ?>">
+    <small id="error-fecha-recordatorio" class="error"></small>
 
-            <label for="color">Color (opcional):</label>
-            <input type="color" id="color" name="color">
+    <label for="color">Color (opcional):</label>
+    <input type="color" id="color" name="color" value="#FFFFFF">
 
-            <input type="hidden" name="tarea_id" value="1">
+    <input type="hidden" name="tarea_id" value="1">
 
-            <button type="submit">Guardar</button>
-            </form>
+    <button type="submit">Guardar</button>
+</form>
+
+<script>
+function validarFormulario() {
+    const fechaVencimiento = document.getElementById('fecha_vencimiento').value;
+    const fechaRecordatorio = document.getElementById('fecha_recordatorio').value;
+    
+    if (fechaRecordatorio && fechaRecordatorio > fechaVencimiento) {
+        alert("¡Error! El recordatorio debe ser ANTES del vencimiento.");
+        return false;
+    }
+    return true;
+}
+</script>
+
+<style>
+.error { color: red; font-size: 0.8rem; }
+</style>
         </div>
     </div>
 </body>
