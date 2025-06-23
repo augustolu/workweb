@@ -434,6 +434,25 @@ function obtenerColoresTarea($colorNombre)
                 <option value="media">Media</option>
                 <option value="baja">Baja</option>
             </select>
+            <label for="fecha_vencimiento">Fecha de vencimiento:</label>
+                <input
+                    type="date"
+                    id="fecha_vencimiento"
+                    name="fecha_vencimiento"
+                    required
+                    min="<?= date('Y-m-d') ?>"
+                    style="padding: 0.5rem;"
+                >
+
+                <label for="fecha_recordatorio">Fecha de recordatorio:</label>
+                <input
+                    type="date"
+                    id="fecha_recordatorio"
+                    name="fecha_recordatorio"
+                    min="<?= date('Y-m-d') ?>"
+                    style="padding: 0.5rem;"
+                >
+
 
             <!-- Color -->
             <label for="color">Color:</label>

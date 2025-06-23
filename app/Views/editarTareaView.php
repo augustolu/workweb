@@ -162,25 +162,34 @@
     <option value="normal" <?= $tarea['prioridad'] == 'normal' ? 'selected' : '' ?>>Normal</option>
     <option value="alta" <?= $tarea['prioridad'] == 'alta' ? 'selected' : '' ?>>Alta</option>
   </select>
+  <?php
+function formatoInputFecha(?string $fecha): string {
+    if (!$fecha) return '';
+    $fechaObj = date_create($fecha);
+    return $fechaObj ? $fechaObj->format('Y-m-d') : '';
+}
+?>
 
   <label for="fecha_vencimiento">Fecha de vencimiento:</label>
-  <input
-    type="date"
-    name="fecha_vencimiento"
-    id="fecha_vencimiento"
-    value="<?= esc($tarea['fecha_vencimiento']) ?>"
-    min="<?= date('Y-m-d') ?>"
-    title="Debe ser una fecha futura"
-  >
+<input
+  type="date"
+  name="fecha_vencimiento"
+  id="fecha_vencimiento"
+  value="<?= esc(formatoInputFecha($tarea['fecha_vencimiento'] ?? null)) ?>"
+  min="<?= date('Y-m-d') ?>"
+  title="Debe ser una fecha futura"
+/>
 
-  <label for="fecha_recordatorio">Fecha de recordatorio:</label>
-  <input
-    type="date"
-    name="fecha_recordatorio"
-    id="fecha_recordatorio"
-    value="<?= esc($tarea['fecha_recordatorio']) ?>"
-    title="Debe ser anterior o igual a la fecha de vencimiento"
-  >
+<label for="fecha_recordatorio">Fecha de recordatorio (opcional):</label>
+<input
+  type="date"
+  name="fecha_recordatorio"
+  id="fecha_recordatorio"
+  value="<?= esc(formatoInputFecha($tarea['fecha_recordatorio'] ?? null)) ?>"
+  title="Debe ser anterior o igual a la fecha de vencimiento"
+/>
+
+
 
   <label for="color">Color (formato #RRGGBB):</label>
   <input

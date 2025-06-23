@@ -143,13 +143,36 @@
         <option value="alta">Alta</option>
     </select>
 
-    <label for="fecha_vencimiento">Fecha de vencimiento:</label>
-    <input type="date" id="fecha_vencimiento" name="fecha_vencimiento" required min="<?= date('Y-m-d') ?>">
-    <small id="error-fecha-vencimiento" class="error"></small>
+    <?php
+function formatoInputFecha(?string $fecha): string {
+    if (!$fecha) return '';
+    $fechaObj = date_create($fecha);
+    return $fechaObj ? $fechaObj->format('Y-m-d') : '';
+}
+?>
 
-    <label for="fecha_recordatorio">Fecha de recordatorio (opcional):</label>
-    <input type="date" id="fecha_recordatorio" name="fecha_recordatorio" min="<?= date('Y-m-d') ?>">
-    <small id="error-fecha-recordatorio" class="error"></small>
+<label for="fecha_vencimiento">Fecha de vencimiento:</label>
+<input
+    type="date"
+    id="fecha_vencimiento"
+    name="fecha_vencimiento"
+    required
+    min="<?= date('Y-m-d') ?>"
+    value="<?= esc(formatoInputFecha($tarea['fecha_vencimiento'] ?? null)) ?>"
+>
+<small id="error-fecha-vencimiento" class="error"></small>
+
+<label for="fecha_recordatorio">Fecha de recordatorio:</label>
+<input
+    type="date"
+    id="fecha_recordatorio"
+    name="fecha_recordatorio"
+    required               
+    min="<?= date('Y-m-d') ?>"
+    value="<?= esc(formatoInputFecha($tarea['fecha_recordatorio'] ?? null)) ?>"
+>
+<small id="error-fecha-recordatorio" class="error"></small>
+
 
     <label for="color">Color (opcional):</label>
     <input type="color" id="color" name="color" value="#FFFFFF">
