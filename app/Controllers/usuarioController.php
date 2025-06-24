@@ -62,7 +62,7 @@ class UsuarioController extends BaseController
             $model = new Usuario();
             $usuario = $model->where('correo', $correo)->first();
 
-            if ($usuario && hash('sha256', $clave) === $usuario['contrasenia']) {
+            if ($usuario && $clave === $usuario['contrasenia']) {
                 session()->set([
                     'id_usuario' => $usuario['id'],
                     'nombre'     => $usuario['nombre'],
@@ -91,29 +91,34 @@ class UsuarioController extends BaseController
     }
 
     public function guardarRegistro()
-    {
-        helper(['form']);
+{
+    helper(['form']);
 
-        $nombre = $this->request->getPost('nombre');
-        $correo = $this->request->getPost('correo');
-        $clave  = $this->request->getPost('clave');
+    $nombre = $this->request->getPost('nombre');
+    $correo = $this->request->getPost('correo');
+    $clave  = $this->request->getPost('clave');
 
-        if (empty($nombre) || empty($correo) || empty($clave)) {
-            return redirect()->back()->withInput()->with('error', 'Todos los campos son obligatorios.');
-        }
-
-        $model = new Usuario();
-        $data = [
-            'nombre'     => $nombre,
-            'correo'     => $correo,
-            'contrasenia' => hash('sha256', $clave)
-        ];
-
-        try {
-            $model->insert($data);
-            return redirect()->to('/login')->with('success', 'Registro exitoso. Ahora puedes iniciar sesión.');
-        } catch (\Exception $e) {
-            return redirect()->back()->withInput()->with('error', 'Error al registrar el usuario.');
-        }
+    if (empty($nombre) || empty($correo) || empty($clave)) {
+        return redirect()->back()->withInput()->with('error', 'Todos los campos son obligatorios.');
     }
+
+    $model = new Usuario();
+    
+    if ($model->where('correo', $correo)->first()) {
+        return redirect()->back()->withInput()->with('error', 'El correo ya está registrado.');
+    }
+
+    $data = [
+        'nombre'      => $nombre,
+        'correo'      => $correo,
+        'contrasenia' => $clave  // Sin hasheo (ALMACENAMIENTO EN TEXTO PLANO - SOLO PARA PRUEBAS)
+    ];
+
+    try {
+        $model->insert($data);
+        return redirect()->to('/login')->with('success', 'Registro exitoso. Ahora puedes iniciar sesión.');
+    } catch (\Exception $e) {
+        return redirect()->back()->withInput()->with('error', 'Error al registrar el usuario: '.$e->getMessage());
+    }
+}
 }
